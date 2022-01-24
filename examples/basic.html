@@ -17,13 +17,20 @@
     <body>
         <div id="my-calendar"></div>
             
-        <script src="../node_modules/moment/moment.js" ></script>
-        <script src="../dist/tavo-calendar.js"></script>
+        <script src="moment.min.js" ></script>
+        <script src="../src/tavocalendar.js"></script>
 
         <script>
             const my_calendar = new TavoCalendar('#my-calendar', {
-                date: "2014-12-21",
-                selected: ["2014-12-24"]
+                locale: "pt-br",
+                future_select: false,
+                past_select: true,
+                selected: "2022-01-22",
+                custom_classes: [
+                    { date: "2022-01-22", className: "classe1" },
+                    { date: "2022-01-22", className: "classe2" },
+                    { date: "2022-01-23", className: "classe1" },
+                ]
             })
         </script>   
     </body>

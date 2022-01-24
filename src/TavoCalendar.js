@@ -1,5 +1,5 @@
 /*!
- * calendar 0.0.4
+ * calendar 0.0.4.1
  *
  * @license MIT
  * @author Justinas Bei
@@ -93,7 +93,8 @@
         frozen: false,
         highlight_sunday: true,
         highlight_saturday: false,
-        custom_attributes: null
+        custom_attributes: null,
+        custom_classes: [/*{date: yyyy-mm-dd, class: className}*/]
     }
 
     var TavoCalendar = function(container_q, user_options) {
@@ -128,6 +129,7 @@
             selected: config.selected ? config.selected : [],
             highlight: config.highlight ? config.highlight : [],
             blacklist: config.blacklist ? config.blacklist : [],
+            custom_classes: config.custom_classes ?? [],
             custom_attributes: config.custom_attributes ? config.custom_attributes : {},
             date_start: config.date_start,
             date_end: config.date_end,
@@ -316,6 +318,10 @@
             if (this.config.highlight_sunday && moment_copy.isoWeekday() === 7) {
                 day_wrapper_el.className =  day_wrapper_el.className + " " + CLASS_CALENDAR_DAY_HIGHTLIGHT;
             }
+
+            let classToApply = this.state.custom_classes.filter(c => c.date == moment_copy.format(this.config.format));
+            for (let cssClass of classToApply)
+                day_wrapper_el.className = day_wrapper_el.className + " " + cssClass.className;
             
             if (this.state.blacklist.indexOf(moment_copy.format(this.config.format)) > -1) {
                 day_wrapper_el.className = day_wrapper_el.className + " " + CLASS_CALENDAR_DAY_OFF + " " + CLASS_CALENDAR_DAY_LOCK;
