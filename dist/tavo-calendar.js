@@ -94,6 +94,7 @@
         highlight_sunday: true,
         highlight_saturday: false,
         custom_attributes: null,
+        display_range_info: true,
         custom_classes: [/*{date: yyyy-mm-dd, class: className}*/]
     }
 
@@ -174,7 +175,7 @@
         calendar_info_el = document.createElement('div')
         calendar_info_el.className = CLASS_CALENDAR_INFO;
 
-        if (this.state.date_start) {
+        if (this.state.date_start && this.state.display_range_info) {
             calendar_info_el.style.display = "block";
         } else {
             calendar_info_el.style.display = "none";
@@ -183,7 +184,7 @@
         //Calendar code
         calendar_code_el = document.createElement('div');
 
-        if (this.state.lock) {
+        if (this.state.lock && this.state.display_range_info) {
             calendar_code_el.className = CLASS_CALENDAR_CODE + " " + CLASS_CALENDAR_CODE_LOCK;
         } else {
             calendar_code_el.className = CLASS_CALENDAR_CODE;
@@ -445,6 +446,9 @@
 
                 this.state.lock = true;
                 this.elements.wrapper.dispatchEvent(new Event('calendar-range'))
+
+                if (!this.state.display_range_info)
+                    this.removeLock();
             }
         } else {
             if (this.config.multi_select) {
@@ -494,6 +498,13 @@
 
     TavoCalendar.prototype.getFocusDay = function () {
         return this.moment.format('DD');
+    }
+
+    TavoCalendar.prototype.getFocusRange = function () {
+        return {
+            start: moment(this.moment).startOf('month'),
+            end: moment(this.moment).endOf('month')
+        }
     }
 
     TavoCalendar.prototype.getConfig = function () {
@@ -546,6 +557,36 @@
         if (!this.config.frozen) {
             this.state.lock = false;
         }
+
+        this.destroy();
+        this.mount()
+        this.bindEvents();
+    }
+
+    TavoCalendar.prototype.refresh = function () {
+        this.state = {
+            selected: this.config.selected ? this.config.selected : [],
+            highlight: this.config.highlight ? this.config.highlight : [],
+            blacklist: this.config.blacklist ? this.config.blacklist : [],
+            custom_classes: this.config.custom_classes ?? [],
+            custom_attributes: this.config.custom_attributes ? this.config.custom_attributes : {},
+            date_start: this.config.date_start,
+            date_end: this.config.date_end,
+            lock: this.config.lock || this.config.frozen
+        };
+        let calnedar_moment;
+
+        if (this.config.date) {
+            calnedar_moment = moment(this.config.date, this.config.format);
+        } else {
+            calnedar_moment = moment();
+        }
+
+        this.state.date = calnedar_moment.format(this.config.format);
+
+        calnedar_moment.locale(this.config.locale);
+
+        this.locale_data = calnedar_moment.localeData();
 
         this.destroy();
         this.mount()
